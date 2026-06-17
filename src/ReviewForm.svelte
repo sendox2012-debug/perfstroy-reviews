@@ -7,7 +7,6 @@
         Send,
         Sparkles,
     } from "lucide-svelte";
-    import { sendReviewToBot } from "./lib/telegram.js";
 
     export let tg;
     export let onSuccess;
@@ -23,6 +22,7 @@
     const handleSubmit = () => {
         error = "";
 
+        // Валидация
         if (!contact.trim()) {
             error =
                 contactType === "phone"
@@ -60,35 +60,56 @@
             review: review.trim(),
         };
 
+        console.log("Отправка данных:", data);
+        console.log("Telegram WebApp:", tg);
+
         // Если открыто в Telegram — отправляем через WebApp
-        if (tg) {
-            const success = sendReviewToBot(tg, data);
-            if (success) {
+        if (tg && tg.sendData) {
+            try {
+                const jsonData = JSON.stringify(data);
+                console.log("JSON:", jsonData);
+                tg.sendData(jsonData);
+                console.log("✅ Данные отправлены через sendData");
+
                 // Закрываем Web App
                 setTimeout(() => {
-                    tg.close();
+                    if (tg.close) tg.close();
                 }, 500);
+                return;
+            } catch (e) {
+                console.error("Ошибка sendData:", e);
+                error = "Ошибка отправки: " + e.message;
+                isSubmitting = false;
                 return;
             }
         }
 
-        // Если не в Telegram — редирект (старый способ)
+        // Если НЕ в Telegram — используем fallback (редирект через URL)
+        console.log("⚠️ Не в Telegram, используем fallback");
+
         try {
             const encoded = encodeURIComponent(
                 `${contactType}|${contact.trim()}|${rating}|${review.trim()}`,
             );
             const link = `https://t.me/Perfstroybot?start=rev_${encoded}`;
+            console.log("Ссылка:", link);
+
+            // Пробуем открыть в Telegram
             window.location.href = link;
+
+            setTimeout(() => {
+                window.open(link, "_blank");
+            }, 100);
+
+            setTimeout(() => {
+                onSuccess(data);
+                isSubmitting = false;
+            }, 500);
         } catch (e) {
+            console.error("Ошибка fallback:", e);
             error = "Не удалось отправить отзыв";
             isSubmitting = false;
-            return;
         }
-
-        setTimeout(() => {
-            onSuccess(data);
-            isSubmitting = false;
-        }, 500);
     };
 </script>
 

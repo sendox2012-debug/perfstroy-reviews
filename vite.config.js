@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [svelte()],
   base: "/perfstroy-reviews/",
   build: {
-    outDir: "docs",
+    outDir: "dist",
   },
 });
