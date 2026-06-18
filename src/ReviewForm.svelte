@@ -60,56 +60,17 @@
             review: review.trim(),
         };
 
-        console.log("Отправка данных:", data);
-        console.log("Telegram WebApp:", tg);
+        // Создаём ссылку
+        const link = createReviewLink(data);
+        console.log("Ссылка:", link);
 
-        // Если открыто в Telegram — отправляем через WebApp
-        if (tg && tg.sendData) {
-            try {
-                const jsonData = JSON.stringify(data);
-                console.log("JSON:", jsonData);
-                tg.sendData(jsonData);
-                console.log("✅ Данные отправлены через sendData");
+        // Открываем в Telegram
+        window.location.href = link;
 
-                // Закрываем Web App
-                setTimeout(() => {
-                    if (tg.close) tg.close();
-                }, 500);
-                return;
-            } catch (e) {
-                console.error("Ошибка sendData:", e);
-                error = "Ошибка отправки: " + e.message;
-                isSubmitting = false;
-                return;
-            }
-        }
-
-        // Если НЕ в Telegram — используем fallback (редирект через URL)
-        console.log("⚠️ Не в Telegram, используем fallback");
-
-        try {
-            const encoded = encodeURIComponent(
-                `${contactType}|${contact.trim()}|${rating}|${review.trim()}`,
-            );
-            const link = `https://t.me/Perfstroybot?start=rev_${encoded}`;
-            console.log("Ссылка:", link);
-
-            // Пробуем открыть в Telegram
-            window.location.href = link;
-
-            setTimeout(() => {
-                window.open(link, "_blank");
-            }, 100);
-
-            setTimeout(() => {
-                onSuccess(data);
-                isSubmitting = false;
-            }, 500);
-        } catch (e) {
-            console.error("Ошибка fallback:", e);
-            error = "Не удалось отправить отзыв";
+        setTimeout(() => {
+            onSuccess(data);
             isSubmitting = false;
-        }
+        }, 500);
     };
 </script>
 

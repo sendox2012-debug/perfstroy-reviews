@@ -1,26 +1,16 @@
-export function initTelegram() {
-  const tg = window.Telegram?.WebApp;
+export function createReviewLink(data) {
+  const { contactType, contact, rating, review } = data;
 
-  if (!tg) {
-    console.warn("Telegram WebApp не загружен");
-    return null;
-  }
+  // Ограничиваем длину
+  const cleanContact = contact.trim().substring(0, 20);
+  const cleanReview = review.trim().substring(0, 80);
 
-  tg.ready();
-  tg.expand();
+  // Формат: type|contact|rating|review
+  const dataString = `${contactType}|${cleanContact}|${rating}|${cleanReview}`;
 
-  // Тёмная тема
-  document.documentElement.style.colorScheme = "dark";
+  // URL-кодировка
+  const encoded = encodeURIComponent(dataString);
 
-  return tg;
-}
-
-export function sendReviewToBot(tg, data) {
-  if (!tg) return false;
-
-  // Отправляем данные в бота (без ограничений по длине!)
-  const jsonData = JSON.stringify(data);
-  tg.sendData(jsonData);
-
-  return true;
+  const botUsername = "Perfstroybot";
+  return `https://t.me/${botUsername}?start=rev_${encoded}`;
 }
