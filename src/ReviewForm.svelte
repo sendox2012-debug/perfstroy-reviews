@@ -13,7 +13,6 @@
 
     let contactType = "phone";
     let contact = "";
-    let review = "";
     let rating = 5;
     let hoverRating = 0;
     let isSubmitting = false;
@@ -43,20 +42,13 @@
             }
         }
 
-        if (review.trim().length < 5) {
-            error = "Отзыв слишком короткий (мин. 5 символов)";
-            return;
-        }
-
         isSubmitting = true;
 
-        const data = {
-            contactType,
-            contact: contact.trim(),
-            rating,
-            review: review.trim(),
-        };
+        const data = { contactType, contact: contact.trim(), rating };
         const link = createReviewLink(data);
+
+        console.log("Короткая ссылка:", link);
+        console.log("Длина HEX:", link.split("rev_")[1].length);
 
         window.location.href = link;
 
@@ -71,10 +63,11 @@
     <div class="header">
         <div class="icon-badge"><Sparkles size={24} /></div>
         <h1>Оставить отзыв</h1>
-        <p>Поделитесь впечатлением о нашей работе</p>
+        <p>Оцените нашу работу — комментарий попросит бот</p>
     </div>
 
     <form on:submit|preventDefault={handleSubmit}>
+        <!-- Способ связи -->
         <div class="form-group">
             <label><MessageSquare size={16} /> Способ связи *</label>
             <div class="segmented">
@@ -125,6 +118,7 @@
             {/if}
         </div>
 
+        <!-- Оценка -->
         <div class="form-group">
             <label><Star size={16} /> Оценка</label>
             <div class="stars">
@@ -155,23 +149,11 @@
             </p>
         </div>
 
-        <div class="form-group">
-            <label for="review"><MessageSquare size={16} /> Отзыв *</label>
-            <textarea
-                id="review"
-                class="textarea"
-                bind:value={review}
-                maxlength={500}
-                placeholder="Расскажите о работе..."
-                disabled={isSubmitting}></textarea>
-            <p class="hint">{review.length}/500 символов</p>
-        </div>
-
         {#if error}<div class="error">{error}</div>{/if}
 
         <button type="submit" class="btn btn-primary" disabled={isSubmitting}>
             <Send size={18} />
-            {isSubmitting ? "Отправка..." : "Отправить отзыв"}
+            {isSubmitting ? "Отправка..." : "Продолжить в Telegram"}
         </button>
     </form>
 </div>

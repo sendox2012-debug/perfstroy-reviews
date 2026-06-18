@@ -1,13 +1,42 @@
 <script>
-    import { CheckCircle, RotateCcw, ExternalLink } from "lucide-svelte";
-    export let data;
-    export let onReset;
+    import {
+        CheckCircle,
+        RotateCcw,
+        ExternalLink,
+        Phone,
+        AtSign,
+        Star,
+    } from "lucide-svelte";
+
+    let { data, onReset } = $props();
 </script>
 
 <div class="glass-card success">
     <div class="success-icon"><CheckCircle size={48} /></div>
-    <h1>Спасибо за отзыв!</h1>
-    <p>Ваш отзыв опубликован в нашем Telegram канале</p>
+    <h1>Отлично!</h1>
+    <p>Теперь напишите комментарий боту в Telegram</p>
+
+    {#if data}
+        <div class="review-summary">
+            <div class="summary-item">
+                {#if data.contactType === "phone"}
+                    <Phone size={16} />
+                {:else}
+                    <AtSign size={16} />
+                {/if}
+                <span
+                    >{data.contactType === "phone"
+                        ? "+"
+                        : "@"}{data.contact}</span
+                >
+            </div>
+
+            <div class="summary-item">
+                <Star size={16} />
+                <span>Оценка: {data.rating} из 5</span>
+            </div>
+        </div>
+    {/if}
 
     <a
         href="https://t.me/perfstroy_reviews"
@@ -15,7 +44,7 @@
         rel="noopener noreferrer"
         class="btn btn-primary"
     >
-        <ExternalLink size={18} /> Посмотреть в канале
+        <ExternalLink size={18} /> Посмотреть отзывы в канале
     </a>
 
     <button class="btn-link" on:click={onReset}>
@@ -46,8 +75,27 @@
     }
     .success > p {
         color: var(--text-tertiary);
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
+
+    .review-summary {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
     .btn-link {
         display: inline-flex;
         align-items: center;

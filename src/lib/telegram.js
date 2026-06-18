@@ -1,13 +1,19 @@
+export function stringToHex(str) {
+  const utf8 = unescape(encodeURIComponent(str));
+  let hex = "";
+  for (let i = 0; i < utf8.length; i++) {
+    hex += utf8.charCodeAt(i).toString(16).padStart(2, "0");
+  }
+  return hex;
+}
+
+// Короткая ссылка: только тип|контакт|рейтинг
 export function createReviewLink(data) {
-  const { contactType, contact, rating, review } = data;
+  const { contactType, contact, rating } = data;
 
-  // Ограничиваем длину
   const cleanContact = contact.trim().substring(0, 20);
-  const cleanReview = review.trim().substring(0, 80);
+  const dataString = `${contactType}|${cleanContact}|${rating}`;
 
-  // Формат: type|contact|rating|review
-  const dataString = `${contactType}|${cleanContact}|${rating}|${cleanReview}`;
-  const encoded = encodeURIComponent(dataString);
-
-  return `https://t.me/Perfstroybot?start=rev_${encoded}`;
+  const hex = stringToHex(dataString);
+  return `https://t.me/Perfstroybot?start=rev_${hex}`;
 }

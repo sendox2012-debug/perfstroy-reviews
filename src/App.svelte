@@ -1,16 +1,9 @@
 <script>
-    import { onMount } from "svelte";
     import ReviewForm from "./ReviewForm.svelte";
     import Success from "./Success.svelte";
-    import { initTelegram } from "./lib/telegram.js";
 
-    let tg = null;
     let state = "form";
     let reviewData = null;
-
-    onMount(() => {
-        tg = initTelegram();
-    });
 
     const handleSuccess = (data) => {
         reviewData = data;
@@ -26,7 +19,7 @@
 <main class="app">
     <div class="container">
         {#if state === "form"}
-            <ReviewForm {tg} onSuccess={handleSuccess} />
+            <ReviewForm onSuccess={handleSuccess} />
         {:else}
             <Success data={reviewData} onReset={handleReset} />
         {/if}
