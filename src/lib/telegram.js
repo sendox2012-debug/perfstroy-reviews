@@ -7,10 +7,7 @@ export function createReviewLink(data) {
 
   // Формат: type|contact|rating|review
   const dataString = `${contactType}|${cleanContact}|${rating}|${cleanReview}`;
-
-  // URL-кодировка
   const encoded = encodeURIComponent(dataString);
 
-  const botUsername = "Perfstroybot";
-  return `https://t.me/${botUsername}?start=rev_${encoded}`;
+  return `https://t.me/Perfstroybot?start=rev_${encoded}`;
 }

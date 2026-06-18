@@ -7,8 +7,8 @@
         Send,
         Sparkles,
     } from "lucide-svelte";
+    import { createReviewLink } from "./lib/telegram.js";
 
-    export let tg;
     export let onSuccess;
 
     let contactType = "phone";
@@ -22,7 +22,6 @@
     const handleSubmit = () => {
         error = "";
 
-        // Валидация
         if (!contact.trim()) {
             error =
                 contactType === "phone"
@@ -32,8 +31,7 @@
         }
 
         if (contactType === "phone") {
-            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-            if (!phoneRegex.test(contact)) {
+            if (!/^[\d\s\-\+\(\)]+$/.test(contact)) {
                 error = "Некорректный номер телефона";
                 return;
             }
@@ -53,18 +51,13 @@
         isSubmitting = true;
 
         const data = {
-            type: "review",
             contactType,
             contact: contact.trim(),
             rating,
             review: review.trim(),
         };
-
-        // Создаём ссылку
         const link = createReviewLink(data);
-        console.log("Ссылка:", link);
 
-        // Открываем в Telegram
         window.location.href = link;
 
         setTimeout(() => {
@@ -76,19 +69,14 @@
 
 <div class="glass-card">
     <div class="header">
-        <div class="icon-badge">
-            <Sparkles size={24} />
-        </div>
+        <div class="icon-badge"><Sparkles size={24} /></div>
         <h1>Оставить отзыв</h1>
         <p>Поделитесь впечатлением о нашей работе</p>
     </div>
 
     <form on:submit|preventDefault={handleSubmit}>
         <div class="form-group">
-            <label>
-                <MessageSquare size={16} />
-                Способ связи *
-            </label>
+            <label><MessageSquare size={16} /> Способ связи *</label>
             <div class="segmented">
                 <button
                     type="button"
@@ -100,8 +88,7 @@
                     }}
                     disabled={isSubmitting}
                 >
-                    <Phone size={16} />
-                    Телефон
+                    <Phone size={16} /> Телефон
                 </button>
                 <button
                     type="button"
@@ -113,8 +100,7 @@
                     }}
                     disabled={isSubmitting}
                 >
-                    <AtSign size={16} />
-                    Username
+                    <AtSign size={16} /> Username
                 </button>
             </div>
 
@@ -140,10 +126,7 @@
         </div>
 
         <div class="form-group">
-            <label>
-                <Star size={16} />
-                Оценка
-            </label>
+            <label><Star size={16} /> Оценка</label>
             <div class="stars">
                 {#each [1, 2, 3, 4, 5] as star}
                     <button
@@ -173,10 +156,7 @@
         </div>
 
         <div class="form-group">
-            <label for="review">
-                <MessageSquare size={16} />
-                Отзыв *
-            </label>
+            <label for="review"><MessageSquare size={16} /> Отзыв *</label>
             <textarea
                 id="review"
                 class="textarea"
@@ -187,9 +167,7 @@
             <p class="hint">{review.length}/500 символов</p>
         </div>
 
-        {#if error}
-            <div class="error">{error}</div>
-        {/if}
+        {#if error}<div class="error">{error}</div>{/if}
 
         <button type="submit" class="btn btn-primary" disabled={isSubmitting}>
             <Send size={18} />
